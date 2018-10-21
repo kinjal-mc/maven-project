@@ -57,7 +57,7 @@ pipeline {
 				stage('Deploy to production') {
 					steps {
 						timeout(time: 5, unit: 'DAYS') {
-							inout message: 'Approve PRDUCTION deployment?'
+							input message: 'Approve PRDUCTION deployment?'
 						}
 
 						sh "cp **/target/*.war ${params.tomcat_prod}"
