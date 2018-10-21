@@ -42,7 +42,7 @@ pipeline {
 			parallel {
 				stage('Deploy to Stage') {
 					steps {
-						sh 'cp **/target/*.war ${params.tomcat_stage}'
+						sh "cp **/target/*.war ${params.tomcat_stage}"
 					}
 					post {
 						success {
@@ -60,7 +60,7 @@ pipeline {
 							inout message: 'Approve PRDUCTION deployment?'
 						}
 
-						sh 'cp **/target/*.war ${params.tomcat_prod}'
+						sh "cp **/target/*.war ${params.tomcat_prod}"
 					}
 					post {
 						success {
