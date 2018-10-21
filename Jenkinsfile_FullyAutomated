@@ -1,3 +1,35 @@
 pipeline {
-	
+	agent any
+
+	tools {
+		maven 'localMaven'
+	}
+
+	stages {
+		stage('Build') {
+			parallel {
+				stage('package') {
+					steps {
+						sh 'mvn clean package'
+					}
+					post {
+						echo 'Archieving Artifacts'
+						archiveArtifacts artifacts: '**/target/*.war'
+					}
+				}
+				stage('check-style') {
+					steps {
+						sh 'mvn checkstyle:checkstyle'
+					}
+					post {
+						success {
+							echo 'checkstyle succeeded !!'
+							checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
+
+						}
+					}
+				}
+			}
+		}
+	}
 }
