@@ -13,8 +13,10 @@ pipeline {
 						sh 'mvn clean package'
 					}
 					post {
-						echo 'Archieving Artifacts'
-						archiveArtifacts artifacts: '**/target/*.war'
+						success {
+							echo 'Archiving Artifacts'
+                    		archiveArtifacts artifacts: '**/target/*.war'
+                    	}
 					}
 				}
 				stage('check-style') {
@@ -25,7 +27,6 @@ pipeline {
 						success {
 							echo 'checkstyle succeeded !!'
 							checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
-
 						}
 					}
 				}
