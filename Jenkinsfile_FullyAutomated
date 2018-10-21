@@ -39,34 +39,36 @@ pipeline {
 		}
 
 		stage('Deployment') {
-			stage('Deploy to Stage') {
-				steps {
-					sh 'cp **/target/*.war ${tomcat_stage}'
-				}
-				post {
-					success {
-						echo 'Deployment done on Stage !!'
+			parallel {
+				stage('Deploy to Stage') {
+					steps {
+						sh 'cp **/target/*.war ${tomcat_stage}'
 					}
-					failure {
-						echo 'Deployment failed on Stage !!'
+					post {
+						success {
+							echo 'Deployment done on Stage !!'
+						}
+						failure {
+							echo 'Deployment failed on Stage !!'
+						}
 					}
 				}
-			}
 
-			stage('Deploy to production') {
-				steps {
-					timeout(time: 5, units: 'DAYS') {
-						inout message: 'Approve PRDUCTION deployment?'
-					}
+				stage('Deploy to production') {
+					steps {
+						timeout(time: 5, units: 'DAYS') {
+							inout message: 'Approve PRDUCTION deployment?'
+						}
 
-					sh 'cp **/target/*.war ${tomcat_prod}'
-				}
-				post {
-					success {
-						echo 'Deployment done on production !!'
+						sh 'cp **/target/*.war ${tomcat_prod}'
 					}
-					failure {
-						echo 'Deployment failed on Production !!'
+					post {
+						success {
+							echo 'Deployment done on production !!'
+						}
+						failure {
+							echo 'Deployment failed on Production !!'
+						}
 					}
 				}
 			}
