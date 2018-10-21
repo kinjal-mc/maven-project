@@ -5,6 +5,11 @@ pipeline {
 		maven 'localMaven'
 	}
 
+	parameters {
+		string (name: 'tomcat_stage', defaultValue: '/Users/e074927/system/apache-tomcat-8.5.34-staging/webapps', description: 'Stage Server address')
+		string (name: 'tomcat_prod', defaultValue: '/Users/e074927/system/apache-tomcat-8.5.34-prod/webapps', description: 'Production server address') 
+	}
+
 	stages {
 		stage('Build') {
 			parallel {
@@ -28,6 +33,40 @@ pipeline {
 							echo 'checkstyle succeeded !!'
 							checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
 						}
+					}
+				}
+			}
+		}
+
+		stage('Deployment') {
+			stage('Deploy to Stage') {
+				steps {
+					sh 'cp **/target/*.war ${tomcat_stage}'
+				}
+				post {
+					success {
+						echo 'Deployment done on Stage !!'
+					}
+					failure {
+						echo 'Deployment failed on Stage !!'
+					}
+				}
+			}
+
+			stage('Deploy to production') {
+				steps {
+					timeout(time: 5, units: 'DAYS') {
+						inout message: 'Approve PRDUCTION deployment?'
+					}
+
+					sh 'cp **/target/*.war ${tomcat_prod}'
+				}
+				post {
+					success {
+						echo 'Deployment done on production !!'
+					}
+					failure {
+						echo 'Deployment failed on Production !!'
 					}
 				}
 			}
